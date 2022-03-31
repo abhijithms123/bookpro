@@ -1,29 +1,38 @@
 from django.shortcuts import render,redirect
-from django.views.generic import View
+from django.views.generic import View,CreateView,ListView
 from book.models import Book
 from customer.forms import UserRegistrationForm,LoginForm,PasswordResetForm
 from django.contrib.auth import authenticate,login,logout
+from django.urls import reverse_lazy
+from django.contrib.auth.models import User
 # Create your views here.
 
 
-class CustomerIndex(View):
-    def get(self, request, *args, **kwargs):
-        qs = Book.objects.all()
-        return render(request, "custhome.html",{"books":qs})
+class CustomerIndex(ListView):
+    model = Book
+    template_name = "custhome.html"
+    context_object_name = "books"
+    # def get(self, request, *args, **kwargs):
+    #     qs = Book.objects.all()
+    #     return render(request, "custhome.html",{"books":qs})
 
 
-class SignUpView(View):
-    def get(self,request, *args,**kwargs):
-        form = UserRegistrationForm()
-        return render(request,"signup.html",{"form":form})
-
-    def post(self,request,*args,**kwargs):
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect("signin")
-        else:
-            return render(request,"signup.html",{"form":form})
+class SignUpView(CreateView):
+    model = User
+    form_class = UserRegistrationForm
+    template_name = "signup.html"
+    success_url = reverse_lazy("signin")
+    # def get(self,request, *args,**kwargs):
+    #     form = UserRegistrationForm()
+    #     return render(request,"signup.html",{"form":form})
+    #
+    # def post(self,request,*args,**kwargs):
+    #     form = UserRegistrationForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect("signin")
+    #     else:
+    #         return render(request,"signup.html",{"form":form})
 
 
 class SignInView(View):
