@@ -5,6 +5,7 @@ from customer.forms import UserRegistrationForm,LoginForm,PasswordResetForm
 from django.contrib.auth import authenticate,login,logout
 from django.urls import reverse_lazy
 from django.contrib.auth.models import User
+from customer.models import Cart
 # Create your views here.
 
 
@@ -79,4 +80,24 @@ class PasswordResetView(View):
                 return render(request, "password_reset.html", {"form": form})
         else:
             return render(request, "password_reset.html", {"form": form})
+
+# class AddToCart(View):
+#     def post(self,request,*args,**kwargs):
+#         book = Book.objects.get(id=kwargs["id"])
+#         user = request.user
+#         cart = Cart(product=book,user=user)
+#         return redirect("custhome")
+def add_to_cart(request,id):
+    book = Book.objects.get(id=id)
+    user = request.user
+    cart = Cart(product=book,
+                user=user)
+    cart.save()
+    return redirect("custhome")
+
+
+class ViewMyCart(ListView):
+    model = Cart
+    template_name = "mycart.html"
+    context_object_name = "carts"
 
